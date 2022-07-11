@@ -13,6 +13,7 @@ pub struct GaussianMutation {
     /// Magnitude of that change:
     /// - 0.0 = touched genes will not be modified
     /// - 3.0 = touched genes will be += or -= by at most 3.0
+    ///
     coeff: f32,
 }
 
