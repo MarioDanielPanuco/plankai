@@ -8,11 +8,14 @@ use rand::prelude::SliceRandom;
 use rand::RngCore;
 use crate::chromosome::Chromosome;
 use crate::crossover::CrossoverMethod;
+use crate::mutation::MutationMethod;
 use crate::selection::SelectionMethod;
 
+#[derive(Debug, Clone)]
 pub struct GeneticAlgorithm<S> {
     selection_method: S,
     crossover_method: Box<dyn CrossoverMethod>,
+    mutation_method: Box<dyn MutationMethod>,
 }
 
 pub trait Individual {
@@ -26,10 +29,12 @@ impl<S> GeneticAlgorithm<S>
         S: SelectionMethod {
     pub fn new(selection_method: S,
                crossover_method: impl CrossoverMethod + 'static,
+               mutation_method: impl MutationMethod + 'static,
     ) -> Self {
         Self {
             selection_method,
             crossover_method: Box::new(crossover_method),
+            mutation_method: Box::new(mutation_method),
         }
     }
 
