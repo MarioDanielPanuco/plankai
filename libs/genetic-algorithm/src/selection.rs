@@ -2,8 +2,8 @@ pub use self::roulette_wheel::*;
 
 use crate::*;
 
-mod roulette_wheel;
 mod boltzmann;
+mod roulette_wheel;
 
 /*
 enum S_Param{
