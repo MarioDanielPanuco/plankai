@@ -6,11 +6,12 @@ mod individual;
 mod mutation;
 mod selection;
 
-use crate::chromosome::*;
-use crate::crossover::*;
-use crate::individual::*;
-use crate::mutation::*;
-use crate::selection::*;
+pub use self::selection::*;
+pub use crate::chromosome::*;
+pub use crate::crossover::*;
+pub use crate::individual::*;
+pub use crate::mutation::*;
+
 use rand::prelude::SliceRandom;
 use rand::RngCore;
 

@@ -1,12 +1,17 @@
+// #![feature(array_methods)]
+// #![feature(crate_visibility_modifier)]
 mod layer;
 mod neuron;
+mod layer_topology;
 
-use self::{layer::*, neuron::*};
+pub use self::layer_topology::*;
+use self::layer::*;
 use rand::Rng;
-use rand_chacha::{rand_core::RngCore, ChaCha8Rng};
+use rand_chacha::rand_core::RngCore;
 
 extern crate approx;
 
+#[derive(Debug)]
 pub struct Network {
     layers: Vec<Layer>,
 }
@@ -32,11 +37,50 @@ impl Network {
 
         Self { layers }
     }
+
+    pub fn weights(&self) -> Vec<f32> {
+        use std::iter::once;
+
+        self.layers
+            .iter()
+            .flat_map(|layer| layer.neurons.iter())
+            .flat_map(|neuron| once(&neuron.bias).chain(&neuron.weights))
+            .cloned()
+            .collect()
+    }
+
+    pub fn from_weights(
+        layers: &[LayerTopology],
+        weights: impl IntoIterator<Item = f32>,
+    ) -> Self {
+        todo!()
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    mod weights {
+        use super::*;
+        use self::neuron::*;
+
+        #[test]
+        fn test() {
+            let network = Network::new(vec![
+                Layer::new(vec![Neuron::new(0.1, vec![0.2, 0.3, 0.4])]),
+                Layer::new(vec![Neuron::new(0.5, vec![0.6, 0.7, 0.8])]),
+            ]);
+
+            let actual = network.weights();
+            let expected = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+
+            approx::assert_relative_eq!(
+                actual.as_slice(),
+                expected.as_slice(),
+            );
+        }
+    }
 
     mod random {
         use super::*;
@@ -84,6 +128,7 @@ mod tests {
 
     mod propagate {
         use super::*;
+        use self::neuron::*;
 
         #[test]
         fn test() {

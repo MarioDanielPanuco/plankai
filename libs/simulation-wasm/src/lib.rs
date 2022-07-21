@@ -1,6 +1,7 @@
 use lib_simulation as sim;
 use rand::prelude::*;
 use wasm_bindgen::prelude::*;
+use serde::Serialize;
 
 #[wasm_bindgen]
 pub struct Simulation {
@@ -8,15 +9,21 @@ pub struct Simulation {
     sim: sim::Simulation,
 }
 
-#[wasm_bindgen]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct World {
     pub animals: Vec<Animal>,
+    pub foods: Vec<Food>,
 }
 
-#[wasm_bindgen]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Animal {
+    pub x: f32,
+    pub y: f32,
+    pub rotation: f32,
+}
+
+#[derive(Clone, Debug, Serialize)]
+pub struct Food {
     pub x: f32,
     pub y: f32,
 }
@@ -30,6 +37,15 @@ impl Simulation {
 
         Self { rng, sim }
     }
+
+    pub fn world(&self) -> JsValue {
+        let world = World::from(self.sim.world());
+        JsValue::from_serde(&world).unwrap()
+    }
+
+    pub fn step(&mut self) {
+        self.sim.step(&mut self.rng);
+    }
 }
 
 impl From<&sim::World> for World {
@@ -40,7 +56,13 @@ impl From<&sim::World> for World {
             .map(Animal::from)
             .collect();
 
-        Self { animals }
+        let foods = world
+            .foods()
+            .iter()
+            .map(Food::from)
+            .collect();
+
+        Self { animals, foods }
     }
 }
 
@@ -49,11 +71,16 @@ impl From<&sim::Animal> for Animal {
         Self {
             x: animal.position().x,
             y: animal.position().y,
+            rotation: animal.rotation().angle(),
         }
     }
 }
 
-#[wasm_bindgen]
-pub fn whos_that_plankton() -> String {
-    "Mister Peanutbutter".into()
+impl From<&sim::Food> for Food {
+    fn from(food: &sim::Food) -> Self {
+        Self {
+            x: food.position().x,
+            y: food.position().y,
+        }
+    }
 }
