@@ -1,10 +1,11 @@
-pub use crate::{animal::*, food::*, world::*};
+pub use crate::{animal::*, food::*, world::*, eye::*};
 
 mod animal;
 mod food;
 mod world;
 mod eye;
 mod animal_individual;
+mod brain;
 
 // use animal::*;
 use nalgebra as na;
@@ -91,7 +92,7 @@ impl Simulation {
                 &self.world.foods,
             );
 
-            let response = animal.brain.propagate(vision);
+            let response = animal.brain.nn.propagate(vision);
 
             let speed = response[0].clamp(
                 -SPEED_ACCEL,
