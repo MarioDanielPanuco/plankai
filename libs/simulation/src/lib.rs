@@ -1,4 +1,4 @@
-pub use crate::{animal::*, food::*, world::*, eye::*};
+pub use crate::{animal::*, config::*, statistics::* , food::*, world::*, eye::*};
 
 mod animal;
 mod food;
@@ -6,6 +6,8 @@ mod world;
 mod eye;
 mod animal_individual;
 mod brain;
+mod config;
+mod statistics;
 
 // use animal::*;
 use nalgebra as na;
@@ -13,9 +15,9 @@ use rand::{Rng, RngCore};
 
 use lib_genetic_algorithm as ga;
 use lib_neural_network as nn;
-
-use std::f32::consts::{FRAC_2_PI, FRAC_PI_8};
+use std::f32::consts::*;
 use crate::animal_individual::*;
+use serde::{Deserialize, Serialize};
 
 // Constants
 const SPEED_MIN:            f32     = 0.001;
@@ -26,102 +28,56 @@ const GENERATION_LENGTH:    usize   = 2500;
 
 
 pub struct Simulation {
+    config: Config,
     world: World,
-    ga: ga::GeneticAlgorithm<ga::RouletteWheel>,
     age: usize,
+    generation: usize,
 }
 
 impl Simulation {
-    pub fn random(rng: &mut dyn RngCore) -> Self {
-        let ga = ga::GeneticAlgorithm::new(
-            ga::RouletteWheel::default(),
-            ga::UniformCrossover::default(),
-            ga::GaussianMutation::new(0.01, 0.3),
-        );
+    pub fn random(config: Config, rng: &mut dyn RngCore) -> Self {
+        let world = World::random(&config, rng);
+
         Self {
-            world: World::random(rng),
-            ga,
+            config,
+            world,
             age: 0,
+            generation: 0,
         }
+    }
+
+    pub fn config(&self) -> &Config {
+        &self.config
     }
 
     pub fn world(&self) -> &World {
         &self.world
     }
 
-    pub fn step(&mut self, rng: &mut dyn RngCore) {
+    pub fn step(&mut self, rng: &mut dyn RngCore) -> Option<Statistics> {
         self.process_collisions(rng);
         self.process_brains();
         self.process_movements();
-
-        self.age += 1;
-
-        if self.age > GENERATION_LENGTH {
-            self.evolve(rng);
-        }
+        self.try_evolving(rng)
     }
 
-    fn evolve(&mut self, rng: &mut dyn RngCore) {
-        self.age = 0;
-
-        let current_population: Vec<_> = self
-            .world
-            .animals
-            .iter()
-            .map(AnimalIndividual::from_animal)
-            .collect();
-
-        let evolve_population =
-            self.ga.evolve(rng, &current_population);
-
-        self.world.animals = evolve_population
-            .into_iter()
-            .map(|individual| individual.into_animal(rng))
-            .collect();
-
-        for food in &mut self.world.foods {
-            food.position = rng.gen();
+    pub fn train(&mut self, rng: &mut dyn RngCore) -> Statistics {
+        loop {
+            if let Some(statistics) = self.step(rng) {
+                return statistics;
+            }
         }
     }
+}
 
-    fn process_brains(&mut self) {
-        for animal in &mut self.world.animals {
-            let vision = animal.eye.process_vision(
-                animal.position,
-                animal.rotation,
-                &self.world.foods,
-            );
 
-            let response = animal.brain.nn.propagate(vision);
-
-            let speed = response[0].clamp(
-                -SPEED_ACCEL,
-                SPEED_ACCEL,
-            );
-
-            let rotation = response[1].clamp(
-                -ROTATION_ACCEL,
-                ROTATION_ACCEL,
-            );
-
-            animal.speed =
-                (animal.speed + speed).clamp(SPEED_MIN, SPEED_MAX);
-
-            animal.rotation = na::Rotation2::new(
-                animal.rotation.angle() + rotation,
-            );
-        }
-    }
-
+impl Simulation {
     fn process_collisions(&mut self, rng: &mut dyn RngCore) {
         for animal in &mut self.world.animals {
             for food in &mut self.world.foods {
-                let distance = na::distance(
-                    &animal.position,
-                    &food.position,
-                );
+                let distance = na::distance(&animal.position, &food.position);
 
-                if distance <= 0.01 {
+                if distance <= self.config.food_size {
                     animal.satiation += 1;
                     food.position = rng.gen();
                 }
@@ -129,15 +85,73 @@ impl Simulation {
         }
     }
 
+    fn process_brains(&mut self) {
+        for animal in &mut self.world.animals {
+            animal.process_brain(&self.config, &self.world.foods);
+        }
+    }
+
     fn process_movements(&mut self) {
         for animal in &mut self.world.animals {
-            animal.position +=
-                animal.rotation * na::Vector2::new(animal.speed, 0.0);
+            animal.process_movement();
+        }
+    }
 
-            animal.position.x = na::wrap(animal.position.x, 0.0, 1.0);
-            animal.position.y = na::wrap(animal.position.y, 0.0, 1.0);
+    fn try_evolving(&mut self, rng: &mut dyn RngCore) -> Option<Statistics> {
+        self.age += 1;
+
+        if self.age > self.config.sim_generation_length {
+            Some(self.evolve(rng))
+        } else {
+            None
+        }
+    }
+
+    fn evolve(&mut self, rng: &mut dyn RngCore) -> Statistics {
+        self.age = 0;
+        self.generation += 1;
+
+        let mut individuals: Vec<_> = self
+            .world
+            .animals
+            .iter()
+            .map(AnimalIndividual::from_animal)
+            .collect();
+
+        if self.config.ga_reverse == 1 {
+            let max_satiation = self
+                .world
+                .animals
+                .iter()
+                .map(|animal| animal.satiation)
+                .max()
+                .unwrap_or_default();
+
+            for individual in &mut individuals {
+                individual.fitness = (max_satiation as f32) - individual.fitness;
+            }
+        }
+
+        let ga = ga::GeneticAlgorithm::new(
+            ga::RouletteWheel::default(),
+            ga::UniformCrossover::default(),
+            ga::GaussianMutation::new(self.config.ga_mut_chance, self.config.ga_mut_coeff),
+        );
+
+        let (individuals, statistics) = ga.evolve(rng, &individuals);
+
+        self.world.animals = individuals
+            .into_iter()
+            .map(|i| i.into_animal(&self.config, rng))
+            .collect();
+
+        for food in &mut self.world.foods {
+            food.position = rng.gen();
+        }
+
+        Statistics {
+            generation: self.generation - 1,
+            ga: statistics,
         }
     }
 }
-
-

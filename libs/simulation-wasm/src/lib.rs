@@ -1,3 +1,9 @@
+pub use self::{animal::*, world::*, food::*};
+
+mod animal;
+mod food;
+mod world;
+
 use lib_simulation as sim;
 use rand::prelude::*;
 use wasm_bindgen::prelude::*;
@@ -9,33 +15,25 @@ pub struct Simulation {
     sim: sim::Simulation,
 }
 
-#[derive(Clone, Debug, Serialize)]
-pub struct World {
-    pub animals: Vec<Animal>,
-    pub foods: Vec<Food>,
-}
-
-#[derive(Clone, Debug, Serialize)]
-pub struct Animal {
-    pub x: f32,
-    pub y: f32,
-    pub rotation: f32,
-}
-
-#[derive(Clone, Debug, Serialize)]
-pub struct Food {
-    pub x: f32,
-    pub y: f32,
-}
 
 #[wasm_bindgen]
 impl Simulation {
     #[wasm_bindgen(constructor)]
-    pub fn new() -> Self {
+    pub fn new(config: JsValue) -> Self {
+        let config: sim::Config = config.into_serde().unwrap();
+
         let mut rng = thread_rng();
-        let sim = sim::Simulation::random(&mut rng);
+        let sim = sim::Simulation::random(config, &mut rng);
 
         Self { rng, sim }
+    }
+
+    pub fn default_config() -> JsValue {
+        JsValue::from_serde(&sim::Config::default()).unwrap()
+    }
+
+    pub fn config(&self) -> JsValue {
+        JsValue::from_serde(self.sim.config()).unwrap()
     }
 
     pub fn world(&self) -> JsValue {
@@ -43,44 +41,11 @@ impl Simulation {
         JsValue::from_serde(&world).unwrap()
     }
 
-    pub fn step(&mut self) {
-        self.sim.step(&mut self.rng);
+    pub fn step(&mut self) -> Option<String> {
+        self.sim.step(&mut self.rng).map(|stats| stats.to_string())
     }
-}
 
-impl From<&sim::World> for World {
-    fn from(world: &sim::World) -> Self {
-        let animals = world
-            .animals()
-            .iter()
-            .map(Animal::from)
-            .collect();
-
-        let foods = world
-            .foods()
-            .iter()
-            .map(Food::from)
-            .collect();
-
-        Self { animals, foods }
-    }
-}
-
-impl From<&sim::Animal> for Animal {
-    fn from(animal: &sim::Animal) -> Self {
-        Self {
-            x: animal.position().x,
-            y: animal.position().y,
-            rotation: animal.rotation().angle(),
-        }
-    }
-}
-
-impl From<&sim::Food> for Food {
-    fn from(food: &sim::Food) -> Self {
-        Self {
-            x: food.position().x,
-            y: food.position().y,
-        }
+    pub fn train(&mut self) -> String {
+        self.sim.train(&mut self.rng).to_string()
     }
 }
