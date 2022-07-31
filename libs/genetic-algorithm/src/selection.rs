@@ -1,9 +1,15 @@
-pub use self::roulette_wheel::*;
+pub use self::{
+    tournament::*, 
+    roulette_wheel::*, 
+    rank::*
+}; 
 
 use crate::*;
 
+mod tournament; 
 mod boltzmann;
 mod roulette_wheel;
+mod rank;
 
 /*
 enum S_Param{
@@ -17,7 +23,9 @@ struct Selection_Parameters<'a, I> {
 }*/
 
 pub trait SelectionMethod {
-    fn select<'a, I>(&self, rng: &mut dyn RngCore, population: &'a [I]) -> &'a I
+    fn select<'a, I>(&self,
+                     rng: &mut dyn RngCore,
+                     population: &'a [I]) -> &'a I
     where
         I: Individual;
 }

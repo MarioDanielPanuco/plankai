@@ -81,10 +81,11 @@ mod tests {
     #[allow(clippy::excessive_precision)]
     #[test]
     fn test() {
+        println!("{}", "Tester");
         let mut rng = ChaCha8Rng::from_seed(Default::default());
 
         let ga = GeneticAlgorithm::new(
-            RouletteWheel::default(),
+            Tournament::default(),
             UniformCrossover::default(),
             GaussianMutation::new(0.5, 0.5),
         );

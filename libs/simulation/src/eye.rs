@@ -65,6 +65,24 @@ impl Eye {
 
         cells
     }
+
+    pub fn process_object(
+        &self,
+        position: na::Point2<f32>,
+        rotation: na::Rotation2<f32>,
+        object_position: na::Point2<f32>) -> Option<f32>{
+        let vec = object_position  - position;
+        let dist = vec.norm();
+
+        if dist > self.fov_range {
+            return None;
+        }
+
+        let mut angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle();
+        angle = angle - rotation.angle();
+        angle = na::wrap(angle, -PI, PI);
+        todo!()
+    }
 }
 
 
