@@ -11,13 +11,6 @@ impl SelectionMethod for Tournament {
     {
         let mut tournament_size = population.len() / 2;
 
-    /*  let mut tournament_pop: Vec<&I> = Vec::with_capacity(tournament_size);
-
-        for _ in 1..tournament_size {
-            tournament_pop.push(population.choose(rng).unwrap());
-        }
-    */
-
         let mut best: Option<&I> = None;
 
         loop {

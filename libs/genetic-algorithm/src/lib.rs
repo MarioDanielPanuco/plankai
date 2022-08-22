@@ -85,7 +85,7 @@ mod tests {
         let mut rng = ChaCha8Rng::from_seed(Default::default());
 
         let ga = GeneticAlgorithm::new(
-            Tournament::default(),
+            RouletteWheel::default(),
             UniformCrossover::default(),
             GaussianMutation::new(0.5, 0.5),
         );

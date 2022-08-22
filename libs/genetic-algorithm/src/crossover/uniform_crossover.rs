@@ -36,7 +36,7 @@ mod tests {
     use rand::SeedableRng;
     use rand_chacha::ChaCha8Rng;
 
-    #[allow(clippy::float_cmp)] // it's safe, because we're comparing hard-coded floats only
+    #[allow(clippy::float_cmp)]
     #[test]
     fn test() {
         let mut rng = ChaCha8Rng::from_seed(Default::default());
