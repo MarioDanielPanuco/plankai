@@ -12,3 +12,4 @@ module.exports = {
     new CopyWebpackPlugin(['index.html'])
   ],
 };
+

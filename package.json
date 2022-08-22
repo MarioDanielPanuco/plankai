@@ -35,3 +35,4 @@
     "lib-simulation-wasm": "file:../libs/simulation-wasm/pkg"
   }
 }
+

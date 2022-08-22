@@ -19,6 +19,7 @@
 
 ## About
 
+
 This template is designed for depending on NPM packages that contain
 Rust-generated WebAssembly and using them to create a Website.
 
