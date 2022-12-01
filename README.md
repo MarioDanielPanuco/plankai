@@ -2,7 +2,7 @@ I'd like to thank Patrick Wychowaniec for making the Shorelark tutorial that pro
 
 His work can be found at can be found at [Github.com/Patryk27/shorelark](https://github.com/Patryk27/shorelark).
 
-I'm treating this library as a test lab for modeling an agent or agent in complex dynamical systems.
+I'm treating this library as a test lab for modeling an agent or agents in complex dynamical systems.
 
 # Plankton Agents
 Agents act to maximize their reward function which is influenced by their percept of the environment's state. 
