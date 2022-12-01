@@ -14,6 +14,7 @@ pub struct Config {
     pub ga_reverse: usize,
     pub ga_mut_chance: f32,
     pub ga_mut_coeff: f32,
+    // pub ga_alg: usize, 
 
     pub sim_speed_min: f32,
     pub sim_speed_max: f32,
@@ -39,6 +40,8 @@ impl Default for Config {
             ga_reverse: 0,
             ga_mut_chance: 0.01,
             ga_mut_coeff: 0.3,
+            // ga_alg: 0, 
+            
             //
             sim_speed_min: 0.001,
             sim_speed_max: 0.005,
