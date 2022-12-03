@@ -53,7 +53,15 @@ function exec(input) {
         return;
     }
 
+    if (cmd === "s" || cmd === "save") {
+        execSave(args);
+        return;  
+    }
     throw "unknown command";
+}
+
+function execSave(args) {
+    // TODO: save current model's weights and biases into a file
 }
 
 function execPause(args) {
