@@ -20,3 +20,7 @@ Agents act to maximize their reward function which is influenced by their percep
 ### Inspiration
 I found out that plankton couldn't swim, so I thought about their agency and lack of actuators on their environment.
 This doesn't influence the codebase, but gave me the idea to make a codebase that supports complex agent-environment states. 
+
+### Disclaimer 
+Accidentally removed /www directory from the repository, which handles turning simulation-WASM into a
+webpage, currently looking for a fix. Might have to create new repository to host project. 

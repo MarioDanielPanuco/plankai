@@ -92,6 +92,7 @@ name = "lib-neural-network"
 version = "0.1.0"
 dependencies = [
  "approx 0.5.1",
+ "nalgebra",
  "rand",
  "rand_chacha",
 ]
@@ -119,6 +120,13 @@ dependencies = [
  "rand",
  "serde",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "lib-statistics"
+version = "0.1.0"
+dependencies = [
+ "rand_chacha",
 ]
 
 [[package]]

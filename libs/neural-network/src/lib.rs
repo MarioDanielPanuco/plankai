@@ -10,6 +10,9 @@ use self::layer::*;
 use rand::Rng;
 use rand_chacha::rand_core::RngCore;
 
+// Importing nalgebra library
+use nalgebra as na;
+
 extern crate approx;
 
 #[derive(Debug)]

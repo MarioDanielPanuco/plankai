@@ -1,3 +1,4 @@
+use std::error::Error;
 pub use self::{animal::*, world::*, food::*};
 
 mod animal;
@@ -14,7 +15,6 @@ pub struct Simulation {
     rng: ThreadRng,
     sim: sim::Simulation,
 }
-
 
 #[wasm_bindgen]
 impl Simulation {
@@ -47,5 +47,9 @@ impl Simulation {
 
     pub fn train(&mut self) -> String {
         self.sim.train(&mut self.rng).to_string()
+    }
+
+    pub fn export_stats(&mut self) -> Result<(), Box<dyn Error>> {
+        todo!()
     }
 }
