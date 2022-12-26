@@ -4,7 +4,7 @@ use std::fmt::Formatter;
 #[derive(Parser)]
 #[clap(author = "Mario Daniel Panuco")]
 #[clap(version = "0.2.1")]
-#[clap(about = "Command Line Countdown")]
+#[clap(about = "PlankAI")]
 #[clap(long_about = None)]
 #[derive(Debug)]
 pub struct Args {
