@@ -49,7 +49,12 @@ impl Simulation {
         self.sim.train(&mut self.rng).to_string()
     }
 
-    pub fn export_stats(&mut self) -> Result<(), Box<dyn Error>> {
-        todo!()
-    }
+    // pub fn export_stats(&mut self) -> Result<(), Box<dyn Error>> {
+    //     todo!()
+    // }
+}
+
+#[wasm_bindgen]
+pub struct Statistics {
+
 }
