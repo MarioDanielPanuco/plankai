@@ -104,8 +104,9 @@ function execReset(args) {
                     config.eye_cells = parseInt(argValue);
                     break;
 
-                case "ga_alg": 
-                    break; 
+                case "ga_alg":
+                    config.ga_alg = parseInt(argValue)
+                    break;
                 default:
                     throw `unknown parameter: ${argName}`;
             }

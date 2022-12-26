@@ -31,7 +31,7 @@ body {
 
 #terminal-stdout, #terminal-stdin {
     padding: 1em;
-    background: #282828;
+    background: #464646;
     color: #00FF66;
     border: 1px solid black;
     outline: none;
