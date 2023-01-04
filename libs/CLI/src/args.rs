@@ -11,7 +11,7 @@ pub struct Args {
     action: Action,
 }
 
-#[clap(Derive, Parser, Subcommand)]
+#[derive(Parser, Debug, Clone)]
 pub enum Action {
     #[clap(short='t', long="train", value_parser)]
     Train(isize),
