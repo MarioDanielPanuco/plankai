@@ -1,3 +1,9 @@
+mod discrete_RV;
+mod continuous_RV;
+
+pub use crate::discrete_RV::*; 
+pub use crate::continuous_RV::*; 
+
 #[cfg(test)]
 mod tests {
     use super::*;
