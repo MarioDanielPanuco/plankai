@@ -1,24 +1,38 @@
-use clap::Parser;
-use std::fmt::Formatter;
+pub use clap:: {
+    Args,
+    Subcommand,
+    Parser,
+};
 
-#[derive(Parser)]
-#[clap(author = "Mario Daniel Panuco")]
-#[clap(version = "0.2.1")]
-#[clap(about = "PlankAI")]
-#[clap(long_about = None)]
-#[derive(Debug)]
-pub struct Args {
-    action: Action,
+#[command(author="Mario Daniel Panuco",
+        version="1.0", about="PlankAI CLI Tool")]
+#[derive(Debug, Parser)]
+pub struct PlankArgs {
+    #[clap(subcommand)]
+    pub action: Action,
 }
 
-#[clap(Derive, Parser, Subcommand)]
+#[derive(Debug, Subcommand)]
 pub enum Action {
-    #[clap(short='t', long="train", value_parser)]
-    Train(isize),
+    // #[arg(short='t', long="train", value_parser)]
+    /// Train the model for n iterations
+    Train {
+        iterations: Option<usize>
+    },
 
-    #[clap(short='p', long="pause", value_parser)]
-    Pause(String),
+    // #[arg(short='p', long="pause", value_parser)]
+    Pause { },
 
-    #[clap(short='r', long="reset", value_parser)]
-    Reset(isize),
+    // #[arg(short, long, value_parser)]
+    Reset {
+
+    },
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn parsing() {
+        todo!()
+    }
 }
