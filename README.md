@@ -12,14 +12,13 @@ Agents act to maximize their reward function which is influenced by their percep
     * Adopt the rust-nalgebra library for the neural network as an investment towards a Rust GPU
         utilizing linear albegra libary
     * Tournament selection - DONE 
-    * Boltzman selection
-    * Add mapping to regions in the space, to simulate adding more complexity to a position in the environment.
-    * Implement Statistics and Probablity library
-    * Export statistics as a csv file 
+    * Boltzman selection - 
+    * Statistics Library and Neccessary Import
+    * Integration of egui crate
 
 ### Inspiration
-I found out that plankton couldn't swim, so I thought about their agency and lack of actuators on their environment.
-This doesn't influence the codebase, but gave me the idea to make a codebase that supports complex agent-environment states. 
+I found out that plankton don't have much agency, the name is ironic, but it made me think more of agency and the use of actuators by invertebrate and lower vertebrate biological organisms.
+This doesn't influence the research for the codebase much, but gave me the idea to make a codebase that supports complex agent-environment states. 
 
 ### Disclaimer 
 Accidentally removed /www directory from the repository, which handles turning simulation-WASM into a
